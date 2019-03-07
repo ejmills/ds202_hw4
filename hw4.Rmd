@@ -1,0 +1,90 @@
+---
+title: "HW4"
+author: "Evan Mills"
+date: "March 5, 2019"
+output: html_document
+---
+
+```{r}
+library(datasets)
+library(dplyr)
+library(ggplot2)
+library(plyr)
+
+chicks <- ChickWeight
+```
+
+1.)
+```{r}
+weight0 <- select(chicks, weight, Chick, Time) %>%
+filter(Time == 0)
+head(weight0)
+```
+
+2.)
+```{r}
+complete <- chicks %>%
+  group_by(Chick) %>%
+  filter(n() == 12)
+
+head(complete, 3)
+```
+
+3.)
+```{r}
+complete <- complete %>%
+  mutate(complete, weightGain = as.numeric(weight - weight0[complete$Chick, "weight"] - 1))
+head(complete, 3)
+```
+
+4.)
+
+The chicks on diet 3 gained the most weight out of all the different diets, while chicks on diet 1 gained the least amount of weight.
+```{r}
+day21 <- complete %>%
+  filter(Time == 21)
+ggplot(data = day21, aes(x = Diet, y = weightGain)) + geom_boxplot()
+```
+
+5.)
+
+The chick that gained the least amount of weight was chick 24 which was on diet 2 and only gianed 33gm. Chick 35 gined the most weight gaining a total of 331gm. Chick 35 was on the diet 3.
+```{r}
+ggplot(day21, aes(x = Chick, y = weightGain)) + geom_point()
+
+day21 %>%
+  arrange(weightGain) %>%
+  head()
+
+day21 %>%
+  arrange(desc(weightGain)) %>%
+  head()
+```
+
+6.)
+```{r}
+weight0.0 <- complete %>%
+  filter(Time == 0)
+
+weight0.0 %>%
+  arrange(weight) %>%
+  head()
+
+weight0.0 %>%
+  arrange(desc(weight)) %>%
+  head()
+
+follow <- complete %>%
+  filter(Chick == 23 | Chick == 19 | Chick == 11 | Chick == 3 | Chick == 27 | Chick == 28 | Chick ==  29 | Chick == 33 | Chick == 36 | Chick == 48)
+
+ggplot(follow, aes(x = Time, y = weight, colour=Chick)) + geom_point()
+```
+
+This graph shows the weight of each chick as a function of time. As you can see from the graph the starting weight of the chick does not have a significant impact on the overall weight of the chick at the end of the measurement period.
+
+7.)
+
+What I found intersting is how the diet of the chick affected the overall weight of the chicks.
+```{r}
+ggplot(follow, aes(x = Time, y = weight, colour=Diet)) + geom_point()
+```
